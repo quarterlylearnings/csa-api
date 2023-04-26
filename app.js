@@ -9,7 +9,8 @@ require('./config/passport')(passport);
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const authRouter = require('./routes/auth')
+const basketsRouter = require('./routes/baskets');
+const authRouter = require('./routes/auth');
 
 const app = express();
 
@@ -27,5 +28,6 @@ app.use(session({
 app.use('/auth', authRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/baskets', basketsRouter);
 
 module.exports = app;
