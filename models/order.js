@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Order.belongsTo(models.User, {
-        foreignKey: 'user_id',
+        foreignKey: 'userId',
       });
       Order.belongsToMany(models.Basket, {
         through: 'OrderBaskets',
-        foreignKey: 'order_id',
+        foreignKey: 'orderId',
       });
     }
   }

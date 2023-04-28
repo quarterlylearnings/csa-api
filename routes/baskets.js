@@ -1,49 +1,61 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const { Basket, BasketItem, Item } = require('../models');
+const { Basket, BasketItem, Item } = require("../models");
 
-const { authenticate } = require('../middlewares/auth')
+const { authenticate } = require("../middlewares/auth");
 
 // Create a new basket
-router.post('/', authenticate, async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   try {
-    const basket = await Basket.create(req.body);
+    const newBasket = {
+      name: req.body.name,
+      price: req.body.price,
+    };
+    const basket = await Basket.create(newBasket);
     res.status(201).json(basket);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating basket', error });
+    res.status(500).json({ message: "Error creating basket", error });
   }
 });
 
 // Get all baskets, including associated items
-router.get('/', authenticate, async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
     const baskets = await Basket.findAll();
     res.json(baskets);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving baskets', error });
+    res.status(500).json({ message: "Error retrieving baskets", error });
   }
 });
 
 // Get a specific basket by ID, including associated items
-router.get('/:id', authenticate, async (req, res) => {
+router.get("/:id", authenticate, async (req, res) => {
   try {
     const basket = await Basket.findByPk(req.params.id);
 
     if (!basket) {
-      res.status(404).json({ message: 'Basket not found' });
+      res.status(404).json({ message: "Basket not found" });
     } else {
       res.json(basket);
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving basket', error });
+    res.status(500).json({ message: "Error retrieving basket", error });
   }
 });
 
 // Update a basket by ID
-router.put('/:id', authenticate, async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
+  const { name, price } = req.body;
   try {
-    const [updated] = await Basket.update(req.body, {
+    const newBasket = {};
+    if (name !== undefined) {
+      newBasket.name = name;
+    }
+    if (price !== undefined) {
+      newBasket.price = price;
+    }
+    const [updated] = await Basket.update(newBasket, {
       where: { id: req.params.id },
     });
 
@@ -51,28 +63,28 @@ router.put('/:id', authenticate, async (req, res) => {
       const updatedBasket = await Basket.findByPk(req.params.id);
       res.json(updatedBasket);
     } else {
-      res.status(404).json({ message: 'Basket not found' });
+      res.status(404).json({ message: "Basket not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error updating basket', error });
+    res.status(500).json({ message: "Error updating basket", error });
   }
 });
 
 // Delete a basket by ID
-router.delete('/:id', authenticate, async (req, res) => {
+router.delete("/:id", authenticate, async (req, res) => {
   try {
     const deleted = await Basket.destroy({
       where: { id: req.params.id },
     });
 
     if (deleted) {
-      res.status(204).json({ message: 'Basket deleted' });
+      res.status(204).json({ message: "Basket deleted" });
     } else {
-      res.status(404).json({ message: 'Basket not found' });
+      res.status(404).json({ message: "Basket not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting basket', error });
+    res.status(500).json({ message: "Error deleting basket", error });
   }
 });
 
-module.exports = router
+module.exports = router;
