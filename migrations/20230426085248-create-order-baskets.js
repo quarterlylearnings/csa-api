@@ -11,6 +11,7 @@ module.exports = {
           model: 'Orders',
           key: 'id',
         },
+        field: 'orderId'
       },
       basketId: {
         type: Sequelize.INTEGER,
@@ -19,6 +20,7 @@ module.exports = {
           model: 'Baskets',
           key: 'id',
         },
+        field: 'basketId'
       },
     });
   },
