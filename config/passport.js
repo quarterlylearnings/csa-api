@@ -1,38 +1,24 @@
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
-const { User } = require('../models');
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const User = require('../models').User;
+
+const opts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: 'your_jwt_secret',
+};
 
 module.exports = (passport) => {
   passport.use(
-    new LocalStrategy({ usernameField: 'username' }, async (username, password, done) => {
+    new JwtStrategy(opts, async (jwt_payload, done) => {
       try {
-        const user = await User.findOne({ where: { username } });
-
-        if (!user) {
-          return done(null, false, { message: 'Incorrect username.' });
+        const user = await User.findByPk(jwt_payload.id);
+        if (user) {
+          return done(null, user);
         }
-
-        if (!bcrypt.compareSync(password, user.password)) {
-          return done(null, false, { message: 'Incorrect password.' });
-        }
-
-        return done(null, user);
-      } catch (err) {
-        return done(err);
+        return done(null, false);
+      } catch (error) {
+        return done(error, false);
       }
     })
   );
-
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
-  });
-
-  passport.deserializeUser(async (id, done) => {
-    try {
-      const user = await User.findByPk(id);
-      done(null, user);
-    } catch (err) {
-      done(err);
-    }
-  });
 };
