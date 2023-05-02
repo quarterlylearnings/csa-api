@@ -19,11 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-    secret: 'secret_session_key',
-    resave: false,
-    saveUninitialized: false,
-}))
+app.use(passport.initialize())
 
 app.use('/auth', authRouter);
 app.use('/', indexRouter);
